@@ -84,12 +84,27 @@
         <activity android:name=".ui.JoinActivity"
                   android:screenOrientation="portrait"/>
         <activity android:name=".ui.ObservationActivity"
-                  android:screenOrientation="portrait"/>
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
         <activity android:name=".ui.AddObservationActivity"
                   android:windowSoftInputMode="adjustResize"
-                  android:screenOrientation="portrait"/>
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
         <activity android:name=".ui.ProjectActivity"
-                  android:screenOrientation="portrait"/>
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".ui.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
         <!-- Activities -->
 
 

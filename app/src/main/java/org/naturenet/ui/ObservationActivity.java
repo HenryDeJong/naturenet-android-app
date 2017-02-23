@@ -1,13 +1,10 @@
 package org.naturenet.ui;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.Lists;
@@ -18,35 +15,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.naturenet.R;
-import org.naturenet.data.ObserverInfo;
 import org.naturenet.data.model.Comment;
 import org.naturenet.data.model.Observation;
 import org.naturenet.data.model.Users;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
 
 public class ObservationActivity extends AppCompatActivity {
 
-    static String FRAGMENT_TAG_OBSERVATION_GALLERY = "observation_gallery_fragment";
-    static String FRAGMENT_TAG_OBSERVATION = "observation_fragment";
-    static String TITLE = "EXPLORE";
-    static String SIGNED_USER = "signed_user";
-    static String OBSERVERS = "observers";
-    static String OBSERVATION = "observation";
-    static String OBSERVATIONS = "observations";
-    static String EMPTY = "";
+    public static final String EXTRA_USER = "signed_user";
+    public static final String EXTRA_OBSERVATION = "observation";
 
-    Toolbar toolbar;
     Observation selectedObservation;
-    ObserverInfo selectedObserverInfo;
-    TextView explore_tv_back, toolbar_title;
     GridView gridView;
     DatabaseReference mFirebase;
-    List<Observation> observations;
-    List<ObserverInfo> observers;
     List<Comment> comments;
     Users signed_user;
     Boolean like;
@@ -54,76 +38,46 @@ public class ObservationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_observation);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar_title = (TextView) findViewById(R.id.app_bar_explore_tv);
-        explore_tv_back = (TextView) findViewById(R.id.explore_tv_back);
-        gridView = (GridView) findViewById(R.id.observation_gallery);
-        signed_user = getIntent().getParcelableExtra(SIGNED_USER);
-        observations = getIntent().getParcelableArrayListExtra(OBSERVATIONS);
-        observers = (ArrayList<ObserverInfo>) getIntent().getSerializableExtra(OBSERVERS);
+        selectedObservation = getIntent().getParcelableExtra(EXTRA_OBSERVATION);
+        signed_user = getIntent().getParcelableExtra(EXTRA_USER);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(EMPTY);
-        selectedObservation = null;
-        selectedObserverInfo = null;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(R.string.observation_title);
+        }
+
+        gridView = (GridView) findViewById(R.id.observation_gallery);
         comments = null;
 
-        explore_tv_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ObservationActivity.this.goBackToExploreFragment();
-            }
-        });
-
-        goToObservationGalleryFragment();
-
-        if (getIntent().hasExtra(OBSERVATION)) {
-            selectedObservation = getIntent().getParcelableExtra(OBSERVATION);
-            for (ObserverInfo observer : observers) {
-                if (observer.getObserverId().equals(selectedObservation.userId)) {
-                    selectedObserverInfo = observer;
-                    break;
-                }
-            }
-            goToSelectedObservationFragment();
-        }
+        goToSelectedObservationFragment();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        selectedObservation = null;
-        selectedObserverInfo = null;
-        comments = null;
+        if(getFragmentManager().getBackStackEntryCount() == 0) {
+            finish();
+            overridePendingTransition(R.anim.stay, R.anim.slide_down);
+        } else {
+            super.onBackPressed();
+        }
     }
 
-    public void goBackToExploreFragment() {
-        observations = null;
-        observers = null;
-        selectedObservation = null;
-        selectedObserverInfo = null;
-        comments = null;
-        gridView = null;
-
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-        overridePendingTransition(R.anim.stay, R.anim.slide_down);
-    }
-
-    public void goToObservationGalleryFragment() {
-        toolbar_title.setVisibility(View.VISIBLE);
-        toolbar_title.setText(TITLE);
-
-        getFragmentManager().
-                beginTransaction().
-                replace(R.id.fragment_container, new ObservationGalleryFragment(), FRAGMENT_TAG_OBSERVATION_GALLERY).
-                commit();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                overridePendingTransition(R.anim.stay, R.anim.slide_down);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void goToSelectedObservationFragment() {
-        toolbar_title.setVisibility(View.GONE);
         comments = null;
         like = null;
 
@@ -134,8 +88,8 @@ public class ObservationActivity extends AppCompatActivity {
         }
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new ObservationFragment(), FRAGMENT_TAG_OBSERVATION)
-                .addToBackStack(FRAGMENT_TAG_OBSERVATION).commit();
+                .add(R.id.fragment_container, ObservationFragment.newInstance(selectedObservation.id), ObservationFragment.FRAGMENT_TAG)
+                .commit();
     }
 
     private void getCommentsFor(final String parent) {

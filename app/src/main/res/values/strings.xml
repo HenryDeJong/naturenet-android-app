@@ -68,7 +68,7 @@
     <!-- Project Activity -->
 
     <!-- Observation Activity -->
-    <string name="explore_tv_back">&#60;&#60; EXPLORE</string>
+    <string name="observation_title">Observation</string>
     <!-- Observation Activity -->
 
     <!-- Main Activity -->
@@ -158,6 +158,8 @@
     <string name="error_message_firebase_read">The read failed: </string>
     <string name="error_message_firebase_create">Failed to create: </string>
     <string name="error_message_firebase_login">Login Unsuccessful: </string>
+    <string name="no_connection">Not connected to NatureNet. Please check your network connection.</string>
+    <string name="no_connection_warning">Please check your network connection. There may be a delay </string>
     <!-- General -->
 
 </resources>

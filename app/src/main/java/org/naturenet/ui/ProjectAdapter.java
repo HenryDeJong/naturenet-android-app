@@ -1,51 +1,35 @@
 package org.naturenet.ui;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
+import android.app.Activity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.common.base.Strings;
+import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import org.naturenet.R;
 import org.naturenet.data.model.Project;
 
-import java.util.List;
+public class ProjectAdapter extends FirebaseListAdapter<Project> {
 
-import timber.log.Timber;
-
-public class ProjectAdapter extends ArrayAdapter<Project> implements View.OnClickListener {
-
-    public ProjectAdapter(Context context, List<Project> objects) {
-        super(context, R.layout.project_list_item, objects);
+    public ProjectAdapter(Activity activity, Query query) {
+        super(activity, Project.class, R.layout.project_list_item, query);
     }
 
     @Override
-    public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = convertView;
-
-        if (convertView == null) {
-            view = inflater.inflate(R.layout.project_list_item, parent, false);
-        }
-
-        Project project = getItem(position);
-        view.setTag(project);
-        ImageView thumbnail = (ImageView) view.findViewById(R.id.project_thumbnail);
-        Picasso.with(getContext()).load(Strings.emptyToNull(project.iconUrl)).fit().into(thumbnail);
-        TextView name = (TextView) view.findViewById(R.id.project_name);
-        name.setText(project.name);
-
-        return view;
+    protected void populateView(final View v, final Project model, int position) {
+        v.setTag(model);
+        ImageView thumbnail = (ImageView) v.findViewById(R.id.project_thumbnail);
+        Picasso.with(mActivity).load(Strings.emptyToNull(model.iconUrl)).fit().into(thumbnail);
+        TextView name = (TextView) v.findViewById(R.id.project_name);
+        name.setText(model.name);
     }
 
     @Override
-    public void onClick(View v) {
-        Timber.d("Clicked on project %s", v.getTag().toString());
+    public Project getItem(int pos) {
+        return super.getItem(getCount() - 1 - pos);
     }
 }

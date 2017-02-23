@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import org.naturenet.data.model.Project;
 import org.naturenet.data.model.Site;
+import org.naturenet.data.model.TimestampedData;
 import org.naturenet.data.model.Users;
 import org.naturenet.util.ForestFire;
 
@@ -23,6 +24,8 @@ import io.reactivex.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class NatureNetApplication extends MultiDexApplication {
+
+    private boolean mIsConnected = false;
 
     private final BehaviorSubject<Optional<Users>>  usersBehaviorSubject = BehaviorSubject.create();
 
@@ -69,5 +72,22 @@ public class NatureNetApplication extends MultiDexApplication {
         FirebaseDatabase.getInstance().getReference(Site.NODE_NAME).keepSynced(true);
         FirebaseDatabase.getInstance().getReference(Project.NODE_NAME).keepSynced(true);
         FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
+
+        FirebaseDatabase.getInstance().getReference(".info/connected").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mIsConnected = (boolean)dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Timber.e(databaseError.toException(), "Connection listener canceled");
+                mIsConnected = false;
+            }
+        });
+    }
+
+    public boolean isConnected() {
+        return mIsConnected;
     }
 }

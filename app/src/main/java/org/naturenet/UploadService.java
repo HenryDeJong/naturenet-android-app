@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Maps;
@@ -186,6 +188,7 @@ public class UploadService extends IntentService {
                 } else {
                     mDatabase.getReference(Users.NODE_NAME).child(mObservation.userId).child(LATEST_CONTRIBUTION).setValue(ServerValue.TIMESTAMP);
                     mDatabase.getReference(Project.NODE_NAME).child(mObservation.projectId).child(LATEST_CONTRIBUTION).setValue(ServerValue.TIMESTAMP);
+                    new GeoFire(mDatabase.getReference("geo")).setLocation(mObservation.id, new GeoLocation(mObservation.getLatitude(), mObservation.getLongitude()));
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {

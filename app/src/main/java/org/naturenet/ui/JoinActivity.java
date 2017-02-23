@@ -33,17 +33,17 @@ import timber.log.Timber;
 
 public class JoinActivity extends AppCompatActivity {
 
-    static String JOIN = "join";
-    static String IDS = "ids";
-    static String NAMES = "names";
-    static String LAUNCH = "launch";
-    static String LOGIN = "login";
-    static String NEW_USER = "new_user";
-    static String EMAIL = "email";
-    static String PASSWORD = "password";
-    static String USERS = "users";
-    static String USERS_PRIVATE = "users-private";
-    static String JOINING = "Joining...";
+    public static final String EXTRA_JOIN = "join";
+    public static final String EXTRA_SITE_IDS = "ids";
+    public static final String EXTRA_SITE_NAMES = "names";
+    public static final String EXTRA_LAUNCH = "launch";
+    public static final String EXTRA_LOGIN = "login";
+    public static final String EXTRA_NEW_USER = "new_user";
+
+    static final String USERS = "users";
+    static final String USERS_PRIVATE = "users-private";
+    static final String JOINING = "Joining...";
+
     String userName, password, name, emailAddress, affiliation, error;
     String[] affiliation_ids, affiliation_names;
     DatabaseReference fbRef;
@@ -63,8 +63,8 @@ public class JoinActivity extends AppCompatActivity {
         et_affiliation = (EditText) findViewById(R.id.join_et_affiliation);
         join = (Button) findViewById(R.id.join_b_join);
         setSupportActionBar(toolbar);
-        affiliation_ids = getIntent().getStringArrayExtra(IDS);
-        affiliation_names = getIntent().getStringArrayExtra(NAMES);
+        affiliation_ids = getIntent().getStringArrayExtra(EXTRA_SITE_IDS);
+        affiliation_names = getIntent().getStringArrayExtra(EXTRA_SITE_NAMES);
         pd = new ProgressDialog(this);
 
         et_affiliation.setOnClickListener(new View.OnClickListener() {
@@ -206,7 +206,7 @@ public class JoinActivity extends AppCompatActivity {
         affiliation_ids = null;
         affiliation_names = null;
         Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.putExtra(JOIN, LAUNCH);
+        resultIntent.putExtra(EXTRA_JOIN, EXTRA_LAUNCH);
         setResult(Activity.RESULT_OK, resultIntent);
         clearResources();
         finish();
@@ -217,10 +217,8 @@ public class JoinActivity extends AppCompatActivity {
         affiliation_ids = null;
         affiliation_names = null;
         Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.putExtra(JOIN, LOGIN);
-        resultIntent.putExtra(NEW_USER, createdUser);
-        resultIntent.putExtra(EMAIL, emailAddress);
-        resultIntent.putExtra(PASSWORD, password);
+        resultIntent.putExtra(EXTRA_JOIN, EXTRA_LOGIN);
+        resultIntent.putExtra(EXTRA_NEW_USER, createdUser);
         setResult(Activity.RESULT_OK, resultIntent);
         clearResources();
         finish();

@@ -1,34 +1,37 @@
 package org.naturenet.ui;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 
-import com.google.common.collect.Lists;
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.common.base.Strings;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.squareup.picasso.Picasso;
 
 import org.naturenet.R;
 import org.naturenet.data.model.Observation;
-
-import java.util.Collections;
-import java.util.List;
-
-import timber.log.Timber;
+import org.naturenet.util.NatureNetUtils;
 
 public class ObservationGalleryFragment extends Fragment {
 
-    ObservationActivity o;
+    public static final String FRAGMENT_TAG = "gallery_fragment";
+
     GridView gridView;
-    ProgressDialog pd;
-    List<Observation> observations;
+    FirebaseListAdapter mAdapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onDestroy() {
+        super.onDestroy();
+        mAdapter.cleanup();
     }
 
     @Override
@@ -37,44 +40,26 @@ public class ObservationGalleryFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        gridView = (GridView) view.findViewById(R.id.observation_gallery);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        o = (ObservationActivity) getActivity();
-        gridView = (GridView) o.findViewById(R.id.observation_gallery);
-        pd = new ProgressDialog(o);
-        pd.setMessage(getString(R.string.gallery_loading_observations));
-        pd.setCancelable(false);
-        pd.show();
-
-        observations = Lists.newArrayList(o.observations);
-        Collections.reverse(observations);
-        ObservationAdapter adapter = new ObservationAdapter(o, observations, o.observers);
-        adapter.notifyDataSetChanged();
-        gridView.setAdapter(adapter);
-
-        while(!gridView.getAdapter().areAllItemsEnabled()) {}
-        pd.dismiss();
+        Query query = FirebaseDatabase.getInstance().getReference(Observation.NODE_NAME)
+                .orderByChild("updated_at").limitToLast(20);
+        mAdapter = new ObservationAdapter(getActivity(), query);
+        gridView.setAdapter(mAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                o.selectedObservation = observations.get(position);
-
-                for (int i = 0; i < o.observers.size(); i++) {
-                    if (o.observers.get(i).getObserverId().equals(o.selectedObservation.userId)) {
-                        o.selectedObserverInfo = o.observers.get(i);
-                        break;
-                    }
-                }
-
-                Timber.d("Observation: " + o.selectedObservation.toString());
-                Timber.d("Observer Id: " + o.selectedObserverInfo.getObserverId());
-                Timber.d("Observer Avatar: " + o.selectedObserverInfo.getObserverAvatar());
-                Timber.d("Observer Name: " + o.selectedObserverInfo.getObserverName());
-                Timber.d("Observer Affiliation: " + o.selectedObserverInfo.getObserverAffiliation());
-
-                o.goToSelectedObservationFragment();
+                Intent observationIntent = new Intent(getActivity(), ObservationActivity.class);
+                observationIntent.putExtra(ObservationActivity.EXTRA_OBSERVATION, (Observation)view.getTag());
+                startActivity(observationIntent);
             }
         });
     }

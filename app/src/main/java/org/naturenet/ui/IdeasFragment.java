@@ -11,6 +11,8 @@ import org.naturenet.R;
 
 public class IdeasFragment extends Fragment {
 
+    public static final String FRAGMENT_TAG = "designideas_fragment";
+
     MainActivity main;
     TextView toolbar_title;
 

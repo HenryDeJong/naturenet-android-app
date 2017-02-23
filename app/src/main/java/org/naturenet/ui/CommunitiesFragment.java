@@ -11,6 +11,8 @@ import org.naturenet.R;
 
 public class CommunitiesFragment extends Fragment {
 
+    public static final String FRAGMENT_TAG = "communities_fragment";
+
     MainActivity main;
     TextView toolbar_title;
 

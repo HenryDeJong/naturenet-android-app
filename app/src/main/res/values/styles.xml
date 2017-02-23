@@ -213,13 +213,6 @@
     <!-- Project Activity -->
 
     <!-- Observation Activity -->
-    <style name="explore_tv_back" parent="android:Widget.TextView">
-        <item name="android:text">@string/explore_tv_back</item>
-        <item name="android:textSize">@dimen/font_size_14</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
     <style name="app_bar_explore_tv" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/font_size_16</item>
         <item name="android:textStyle">bold</item>

@@ -86,6 +86,24 @@ public class Observation extends TimestampedData {
     @Exclude
     public boolean isValid() { return !"deleted".equalsIgnoreCase(status); }
 
+    @Exclude
+    public Double getLatitude() {
+        if (location != null && location.size() == 2) {
+            return location.get(0);
+        }
+
+        return null;
+    }
+
+    @Exclude
+    public Double getLongitude() {
+        if (location != null && location.size() == 2) {
+            return location.get(1);
+        }
+
+        return null;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         super.writeToParcel(parcel, flags);

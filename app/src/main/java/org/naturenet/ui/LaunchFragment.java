@@ -9,9 +9,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.naturenet.NatureNetApplication;
 import org.naturenet.R;
 
 public class LaunchFragment extends Fragment {
+
+    public static final String FRAGMENT_TAG = "launch_fragment";
 
     ImageButton join_ib;
     MainActivity main;
@@ -35,11 +38,10 @@ public class LaunchFragment extends Fragment {
         join_ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (main.haveNetworkConnection()) {
-                    join_ib.setVisibility(View.GONE);
+                if (((NatureNetApplication)getActivity().getApplication()).isConnected()) {
                     main.goToJoinActivity();
                 } else {
-                    Toast.makeText(main, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(main, R.string.no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -47,11 +49,10 @@ public class LaunchFragment extends Fragment {
         sign_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (main.haveNetworkConnection()) {
-                    sign_in.setVisibility(View.GONE);
+                if (((NatureNetApplication)getActivity().getApplication()).isConnected()) {
                     main.goToLoginActivity();
                 } else {
-                    Toast.makeText(main, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(main, R.string.no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -17,18 +17,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.common.base.Strings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
+import org.naturenet.NatureNetApplication;
 import org.naturenet.R;
-import org.naturenet.data.model.Users;
 
 public class LoginFragment extends Fragment {
 
-    static String USERS = "users";
+    public static final String FRAGMENT_TAG = "login_fragment";
+
     static String SIGNING_IN = "Signing In...";
 
     DatabaseReference fbRef;
@@ -64,7 +62,7 @@ public class LoginFragment extends Fragment {
                     Toast.makeText(log, LoginFragment.this.getResources().getString(R.string.login_error_message_empty_email), Toast.LENGTH_SHORT).show();
                 } else if (password.equals("")) {
                     Toast.makeText(log, LoginFragment.this.getResources().getString(R.string.login_error_message_empty_password), Toast.LENGTH_SHORT).show();
-                } else if (log.haveNetworkConnection()) {
+                } else if (((NatureNetApplication)getActivity().getApplication()).isConnected()) {
                     signIn.setVisibility(View.GONE);
                     pd.setCancelable(false);
                     pd.show();
@@ -75,24 +73,9 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                fbRef.child(USERS).child(task.getResult().getUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot snapshot) {
-                                        Users loggedUser = snapshot.getValue(Users.class);
-                                        log.signed_user_email = email;
-                                        log.signed_user_password = password;
-                                        pd.dismiss();
-                                        signIn.setVisibility(View.GONE);
-                                        log.continueAsSignedUser(loggedUser);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        pd.dismiss();
-                                        signIn.setVisibility(View.GONE);
-                                        Toast.makeText(log, getResources().getString(R.string.login_error_message_firebase_read) + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                pd.dismiss();
+                                signIn.setVisibility(View.GONE);
+                                log.continueAsSignedUser();
                             } else {
                                 pd.dismiss();
                                 signIn.setVisibility(View.GONE);
@@ -101,7 +84,7 @@ public class LoginFragment extends Fragment {
                         }
                     });
                 } else {
-                    Toast.makeText(log, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(log, R.string.no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -109,11 +92,11 @@ public class LoginFragment extends Fragment {
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (log.haveNetworkConnection()) {
+                if (((NatureNetApplication)getActivity().getApplication()).isConnected()) {
                     join.setVisibility(View.GONE);
                     log.goToJoinActivity();
                 } else {
-                    Toast.makeText(log, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(log, R.string.no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });
