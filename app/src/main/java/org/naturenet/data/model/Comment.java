@@ -45,6 +45,9 @@ public class Comment extends TimestampedData {
         super(in);
         this.id = in.readString();
         this.comment = in.readString();
+        this.commenter = in.readString();
+        this.parent = in.readString();
+        this.context = in.readString();
     }
 
     @Exclude

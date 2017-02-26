@@ -132,4 +132,13 @@ public class Observation extends TimestampedData {
             return new Observation[size];
         }
     };
+
+    public PhotoCaptionContent getData() {
+        return data;
+    }
+
+    @Nullable
+    public String getWhere() {
+        return where;
+    }
 }

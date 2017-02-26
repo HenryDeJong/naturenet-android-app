@@ -15,6 +15,16 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class Project implements Parcelable {
 
+    public Project(String id, String iconUrl, String description, String name,  String status, Long latestContribution, Map<String, Boolean> sites) {
+        this.sites = sites;
+        this.latestContribution = latestContribution;
+        this.status = status;
+        this.name = name;
+        this.description = description;
+        this.iconUrl = iconUrl;
+        this.id = id;
+    }
+
     @Exclude
     public static final String NODE_NAME = "activities";
 

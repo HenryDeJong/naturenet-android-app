@@ -13,6 +13,11 @@ public class PhotoCaptionContent implements Parcelable {
     public String image;
     public String text;
 
+    public PhotoCaptionContent(String im, String txt){
+        image = im;
+        text =txt;
+    }
+
     public PhotoCaptionContent() {}
 
     private PhotoCaptionContent(Parcel in) {

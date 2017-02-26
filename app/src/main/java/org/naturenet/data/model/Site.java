@@ -31,6 +31,13 @@ public class Site implements Parcelable {
 
     private Site() {}
 
+    public Site(String id, String name, String description, ArrayList<Double> location) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.location = location;
+    }
+
     protected Site(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
